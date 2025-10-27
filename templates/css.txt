@@ -1,0 +1,28 @@
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f6f9;
+        }
+        .card {
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-2px);
+        }
+        .risk-high {
+            background-color: #fef2f2; /* Red-50 */
+            border-left: 5px solid #ef4444; /* Red-500 */
+        }
+        .risk-low {
+            background-color: #f0fdf4; /* Green-50 */
+            border-left: 5px solid #22c55e; /* Green-500 */
+        }
+        /* Chatbot floating button and modal styling */
+        #chat-button {
+            transition: all 0.3s ease;
+        }
+        #chat-modal-content {
+            height: 80vh;
+        }
+    </style>

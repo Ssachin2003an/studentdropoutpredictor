@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dropout Prediction</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+        <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f6f9;
+        }
+        .card {
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s ease;
+        }
+        .card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+        }
+        .card:hover::before {
+            left: 100%;
+        }
+        .card:active {
+            transform: translateY(-4px) scale(1.01);
+        }
+        .risk-high {
+            background-color: #fef2f2;
+            border-left: 5px solid #ef4444;
+            animation: pulse-red 2s ease-in-out infinite;
+        }
+        .risk-high:hover {
+            background-color: #fee2e2;
+            border-left-width: 8px;
+        }
+        .risk-low {
+            background-color: #f0fdf4;
+            border-left: 5px solid #22c55e;
+            animation: pulse-green 2s ease-in-out infinite;
+        }
+        .risk-low:hover {
+            background-color: #dcfce7;
+            border-left-width: 8px;
+        }
+        @keyframes pulse-red {
+            0%, 100% {
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            }
+            50% {
+                box-shadow: 0 10px 30px rgba(239, 68, 68, 0.15);
+            }
+        }
+        @keyframes pulse-green {
+            0%, 100% {
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            }
+            50% {
+                box-shadow: 0 10px 30px rgba(34, 197, 94, 0.15);
+            }
+        }
+        /* Chatbot floating button and modal styling */
+        #chat-button {
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+        #chat-button:hover {
+            transform: scale(1.15) rotate(5deg);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+        }
+        #chat-button:active {
+            transform: scale(0.95) rotate(0deg);
+        }
+        #chat-modal-content {
+            height: 80vh;
+            animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: default;
+        }
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        /* Add pointer cursor for interactive elements */
+        button, a, [role="button"] {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        button:hover, a:hover, [role="button"]:hover {
+            filter: brightness(1.1);
+        }
+        /* Smooth cursor trail effect */
+        * {
+            cursor: default;
+        }
+        a, button, input, select, textarea, [role="button"] {
+            cursor: pointer;
+        }
+    </style>  
+</head>
+<body class="p-4 md:p-8">
+    <header class="text-center mb-10">
+        <h1 class="text-4xl font-extrabold text-white-800">Student Dropout Risk Predictor</h1>
+        <p class="text-lg text-gray-500 mt-2">Data-Driven Interventions to Promote Student Success</p>
+    </header>
+
+    <div class="max-w-4xl mx-auto">
+        <div class="card bg-white p-6 md:p-8 rounded-xl">
+            <h2 class="text-2xl font-semibold text-gray-700 mb-6 border-b pb-3">Student Profile Simulation</h2>
+            
+            <form id="predictionForm" class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                <div class="col-span-1">
+                    <label for="age" class="block text-sm font-medium text-gray-700">Age</label>
+                    <input type="number" step="1" id="age" name="age" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div class="col-span-1">
+                    <label for="cgpa" class="block text-sm font-medium text-gray-700">CGPA (0.0 - 10.0)</label>
+                    <input type="number" step="0.1" min="0" max="10" id="cgpa" name="cgpa" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div class="col-span-1">
+                    <label for="attendance_rate" class="block text-sm font-medium text-gray-700">Attendance Rate (%)</label>
+                    <input type="number" step="0.1" min="0" max="100" id="attendance_rate" name="attendance_rate" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div class="col-span-1">
+                    <label for="family_income" class="block text-sm font-medium text-gray-700">Annual Family Income</label>
+                    <input type="number" step="1000" id="family_income" name="family_income" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div class="col-span-1">
+                    <label for="past_failures" class="block text-sm font-medium text-gray-700">Past Failures (Count)</label>
+                    <input type="number" step="1" min="0" id="past_failures" name="past_failures" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div class="col-span-1">
+                    <label for="study_hours_per_week" class="block text-sm font-medium text-gray-700">Study Hours/Week</label>
+                    <input type="number" step="0.1" min="0" id="study_hours_per_week" name="study_hours_per_week" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div class="col-span-1">
+                    <label for="assignments_submitted" class="block text-sm font-medium text-gray-700">Assignments Submitted</label>
+                    <input type="number" step="1" min="0" id="assignments_submitted" name="assignments_submitted" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div class="col-span-1">
+                    <label for="projects_completed" class="block text-sm font-medium text-gray-700">Projects Completed</label>
+                    <input type="number" step="1" min="0" id="projects_completed" name="projects_completed" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div class="col-span-1">
+                    <label for="total_activities" class="block text-sm font-medium text-gray-700">Total Activities</label>
+                    <input type="number" step="1" min="0" id="total_activities" name="total_activities" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div class="col-span-1">
+                    <label for="gender" class="block text-sm font-medium text-gray-700">Gender</label>
+                    <select id="gender" name="gender" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border bg-white focus:ring-indigo-500 focus:border-indigo-500">
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="col-span-1">
+                    <label for="department" class="block text-sm font-medium text-gray-700">Department</label>
+                    <select id="department" name="department" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border bg-white focus:ring-indigo-500 focus:border-indigo-500">
+                        <option value="CS">Computer Science (CS)</option>
+                        <option value="ME">Mechanical Engineering (ME)</option>
+                        <option value="CIVIL">Civil Engineering</option>
+                        <option value="ECE">Electronics & Comm. Eng. (ECE)</option>
+                        <option value="BIO">Biotechnology (BIO)</option>
+                        <option value="COMMERCE">Commerce</option>
+                        <option value="ARTS">Arts</option>
+                    </select>
+                </div>
+                <div class="col-span-1">
+                    <label for="scholarship" class="block text-sm font-medium text-gray-700">Scholarship Status</label>
+                    <select id="scholarship" name="scholarship" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border bg-white focus:ring-indigo-500 focus:border-indigo-500">
+                        <option value="yes">Yes</option>
+                        <option value="no">No</option>
+                    </select>
+                </div>
+                <div class="col-span-1">
+                    <label for="parental_education" class="block text-sm font-medium text-gray-700">Parental Education</label>
+                    <select id="parental_education" name="parental_education" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border bg-white focus:ring-indigo-500 focus:border-indigo-500">
+                        <option value="postgraduate">Postgraduate</option>
+                        <option value="secondary">Secondary</option>
+                        <option value="primary">Primary</option>
+                        <option value="na">Not Applicable</option>
+                    </select>
+                </div>
+                <div class="col-span-1">
+                    <label for="extra_curricular" class="block text-sm font-medium text-gray-700">Extra Curricular</label>
+                    <select id="extra_curricular" name="extra_curricular" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border bg-white focus:ring-indigo-500 focus:border-indigo-500">
+                        <option value="yes">Yes</option>
+                        <option value="no">No</option>
+                    </select>
+                </div>
+                <div class="col-span-1">
+                    <label for="sports_participation" class="block text-sm font-medium text-gray-700">Sports Participation</label>
+                    <select id="sports_participation" name="sports_participation" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border bg-white focus:ring-indigo-500 focus:border-indigo-500">
+                        <option value="yes">Yes</option>
+                        <option value="no">No</option>
+                    </select>
+                </div>
+            </form>
+
+            <div class="col-span-full mt-6">
+                <button type="submit" form="predictionForm" id="predictButton" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:shadow-outline transition duration-150 ease-in-out">
+                    <i class="fas fa-chart-line mr-2"></i> Predict Dropout Risk
+                </button>
+            </div>
+        </div>
+        <div id="resultCard" class="card hidden mt-8 p-6 md:p-8 rounded-xl transition duration-300 ease-in-out">
+            <h3 class="text-xl font-semibold mb-4 text-gray-800 flex items-center">
+                <i class="fas fa-bullhorn mr-3"></i> Prediction Result
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <p class="text-sm font-medium text-gray-500">Risk Status</p>
+                    <p id="riskStatus" class="text-3xl font-extrabold"></p>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-500">Dropout Probability</p>
+                    <p id="probability" class="text-3xl font-extrabold text-indigo-600"></p>
+                </div>
+            </div>
+            <div id="errorBox" class="hidden mt-4 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-lg" role="alert">
+                <p class="font-bold">Prediction Error</p>
+                <p id="errorMessage" class="text-sm"></p>
+            </div>
+        </div>
+    </div>
+    <footer class="mt-12 text-center text-gray-500 text-sm">
+        <p>Student Dropout Predictor</p>
+        <p class="mt-1">© 2025 Sachidananda A N. All rights reserved.</p>
+    </footer>
+    <button id="chat-button" class="fixed bottom-6 right-6 p-4 bg-indigo-600 text-white rounded-full shadow-lg hover:bg-indigo-700 focus:outline-none z-50">
+        <i class="fas fa-comments text-2xl"></i>
+    </button>
+    <div id="chat-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+        <div class="relative top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-xl shadow-xl w-11/12 md:w-3/4 lg:w-1/3">
+            <div id="chat-modal-content" class="flex flex-col">
+                <div class="p-4 border-b flex justify-between items-center bg-indigo-600 rounded-t-xl">
+                    <h4 class="text-lg font-bold text-white"><i class="fas fa-robot mr-2"></i> Intervention Advisor</h4>
+                    <button id="close-chat-modal" class="text-white hover:text-gray-200">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                <div id="chat-messages" class="flex-grow p-4 overflow-y-auto bg-gray-50" style="height: 50vh;">
+                    <div id="initial-message" class="text-center text-gray-500 p-4 bg-gray-200 rounded-lg">
+                        <p class="font-semibold">Generate a prediction first!</p>
+                        <p class="text-sm">Click 'Get Advice' after a prediction to receive personalized intervention strategies.</p>
+                    </div>
+                    <div id="advice-button-container" class="mt-4 text-center hidden">
+                        <button id="get-advice-button" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-150">
+                            <i class="fas fa-magic mr-2"></i> Get Intervention Advice
+                        </button>
+                    </div>
+                    <div id="advice-response" class="mt-4"></div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        let lastPredictionData = null;
+        let lastInputData = null;
+        const chatModal = document.getElementById('chat-modal');
+        const chatButton = document.getElementById('chat-button');
+        const closeChatModal = document.getElementById('close-chat-modal');
+        const getAdviceButton = document.getElementById('get-advice-button');
+        const adviceButtonContainer = document.getElementById('advice-button-container');
+        const adviceResponseDiv = document.getElementById('advice-response');
+        const initialMessageDiv = document.getElementById('initial-message');
+        document.getElementById('predictionForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+            lastInputData = data;
+
+            const predictButton = document.getElementById('predictButton');
+            predictButton.disabled = true;
+            predictButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Predicting...';
+
+            document.getElementById('resultCard').classList.add('hidden');
+            document.getElementById('errorBox').classList.add('hidden');
+            adviceResponseDiv.innerHTML = '';
+            initialMessageDiv.classList.remove('hidden');
+            adviceButtonContainer.classList.add('hidden');
+
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (!response.ok || !result.success) {
+                    throw new Error(result.error || 'Server returned an error.');
+                }
+
+                const riskStatus = result.prediction_status;
+                const probability = (result.probability * 100).toFixed(2) + '%';
+                
+                document.getElementById('riskStatus').textContent = riskStatus;
+                document.getElementById('probability').textContent = probability;
+
+                const resultCard = document.getElementById('resultCard');
+                resultCard.classList.remove('hidden');
+
+                if (riskStatus === 'High Risk') {
+                    resultCard.classList.remove('risk-low');
+                    resultCard.classList.add('risk-high');
+                    document.getElementById('riskStatus').classList.add('text-red-600');
+                    document.getElementById('riskStatus').classList.remove('text-green-600');
+                } else {
+                    resultCard.classList.remove('risk-high');
+                    resultCard.classList.add('risk-low');
+                    document.getElementById('riskStatus').classList.add('text-green-600');
+                    document.getElementById('riskStatus').classList.remove('text-red-600');
+                }
+                lastPredictionData = {
+                    risk_status: riskStatus,
+                    input_data: result.input_data
+                };
+                initialMessageDiv.classList.add('hidden');
+                adviceButtonContainer.classList.remove('hidden');
+                
+            } catch (error) {
+                console.error('Prediction failed:', error);
+                document.getElementById('errorMessage').textContent = error.message;
+                document.getElementById('errorBox').classList.remove('hidden');
+                lastPredictionData = null;
+            } finally {
+                predictButton.disabled = false;
+                predictButton.innerHTML = '<i class="fas fa-chart-line mr-2"></i> Predict Dropout Risk';
+            }
+        });
+
+        chatButton.addEventListener('click', () => {
+            chatModal.classList.remove('hidden');
+        });
+        closeChatModal.addEventListener('click', () => {
+            chatModal.classList.add('hidden');
+        });
+        chatModal.addEventListener('click', (e) => {
+            if (e.target === chatModal) {
+                chatModal.classList.add('hidden');
+            }
+        });
+        getAdviceButton.addEventListener('click', fetchInterventionAdvice);
+        
+        async function fetchInterventionAdvice() {
+            if (!lastPredictionData) {
+                alert("Please run a prediction first before getting advice.");
+                return;
+            }
+
+            const button = getAdviceButton;
+            button.disabled = true;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Generating Advice...';
+            
+            adviceResponseDiv.innerHTML = `<div class="p-4 text-center text-indigo-600"><i class="fas fa-spinner fa-spin text-2xl"></i><p class="mt-2">Connecting to Advisor...</p></div>`;
+            
+            adviceButtonContainer.classList.add('hidden');
+
+            try {
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(lastPredictionData)
+                });
+
+                const result = await response.json();
+
+                if (!response.ok || !result.success) {
+                    throw new Error(result.error || 'Failed to get advice from the server.');
+                }
+                const formattedAdvice = result.advice
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                    .replace(/\n/g, '<br>')
+                    .replace(/^- (.*)/gm, '<li class="ml-4 list-disc">$1</li>');
+
+                adviceResponseDiv.innerHTML = `
+                    <div class="bg-white p-4 rounded-lg shadow-md border border-gray-200">
+                        <h5 class="text-md font-bold text-indigo-700 mb-2"><i class="fas fa-clipboard-check mr-2"></i> Targeted Intervention Strategy:</h5>
+                        <div class="text-gray-700 text-sm leading-relaxed">${formattedAdvice}</div>
+                    </div>
+                `;
+                
+            } catch (error) {
+                console.error('Chatbot API failed:', error);
+                adviceResponseDiv.innerHTML = `<div class="p-4 text-red-700 bg-red-100 rounded-lg">
+                    <p class="font-bold">Advice Error:</p>
+                    <p class="text-sm">${error.message}. Please check your Flask server console for API connection issues.</p>
+                </div>`;
+            } finally {
+                button.disabled = false;
+                button.innerHTML = '<i class="fas fa-magic mr-2"></i> Get Intervention Advice';
+            }
+        }
+
+    </script>
+</body>
+</html>

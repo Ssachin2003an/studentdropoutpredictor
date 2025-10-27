@@ -1,0 +1,110 @@
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f6f9;
+        }
+        .card {
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s ease;
+        }
+        .card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+        }
+        .card:hover::before {
+            left: 100%;
+        }
+        .card:active {
+            transform: translateY(-4px) scale(1.01);
+        }
+        .risk-high {
+            background-color: #fef2f2;
+            border-left: 5px solid #ef4444;
+            animation: pulse-red 2s ease-in-out infinite;
+        }
+        .risk-high:hover {
+            background-color: #fee2e2;
+            border-left-width: 8px;
+        }
+        .risk-low {
+            background-color: #f0fdf4;
+            border-left: 5px solid #22c55e;
+            animation: pulse-green 2s ease-in-out infinite;
+        }
+        .risk-low:hover {
+            background-color: #dcfce7;
+            border-left-width: 8px;
+        }
+        @keyframes pulse-red {
+            0%, 100% {
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            }
+            50% {
+                box-shadow: 0 10px 30px rgba(239, 68, 68, 0.15);
+            }
+        }
+        @keyframes pulse-green {
+            0%, 100% {
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            }
+            50% {
+                box-shadow: 0 10px 30px rgba(34, 197, 94, 0.15);
+            }
+        }
+        /* Chatbot floating button and modal styling */
+        #chat-button {
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+        #chat-button:hover {
+            transform: scale(1.15) rotate(5deg);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+        }
+        #chat-button:active {
+            transform: scale(0.95) rotate(0deg);
+        }
+        #chat-modal-content {
+            height: 80vh;
+            animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: default;
+        }
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        /* Add pointer cursor for interactive elements */
+        button, a, [role="button"] {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        button:hover, a:hover, [role="button"]:hover {
+            filter: brightness(1.1);
+        }
+        /* Smooth cursor trail effect */
+        * {
+            cursor: default;
+        }
+        a, button, input, select, textarea, [role="button"] {
+            cursor: pointer;
+        }
+    </style>  

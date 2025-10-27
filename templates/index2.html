@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dropout Prediction</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<style>
+        /* Cyber Security Theme with Modern Corporate Look */
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+            background-attachment: fixed;
+            position: relative;
+            overflow-x: hidden;
+            color: #e2e8f0;
+        }
+        
+        /* Animated grid background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(6, 182, 212, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(6, 182, 212, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 20s linear infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+        
+        /* Glowing orbs in background */
+        body::after {
+            content: '';
+            position: fixed;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(6, 182, 212, 0.08) 0%, transparent 70%);
+            animation: orbFloat 15s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        @keyframes orbFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(-30px, 30px) scale(1.1); }
+        }
+
+        /* Header Styling */
+        header h1 {
+            color: #ffffff;
+            text-shadow: 0 0 20px rgba(6, 182, 212, 0.5);
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        header p {
+            color: #94a3b8;
+            font-size: 1.125rem;
+        }
+        
+        /* Card Base Styling */
+        .card {
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.98) 100%);
+            border: 1px solid rgba(6, 182, 212, 0.2);
+            box-shadow: 
+                0 10px 30px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05),
+                0 0 20px rgba(6, 182, 212, 0.1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            z-index: 1;
+        }
+        
+        /* Scanning line effect */
+        .card::before {
+            content: '';
+            position: absolute;
+            top: -100%;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, 
+                transparent 0%, 
+                rgba(6, 182, 212, 0.3) 50%, 
+                transparent 100%);
+            transition: top 0.6s ease;
+            pointer-events: none;
+        }
+        
+        /* Corner accent lines */
+        .card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                linear-gradient(90deg, #06b6d4 2px, transparent 2px) 0 0,
+                linear-gradient(90deg, #06b6d4 2px, transparent 2px) 100% 0,
+                linear-gradient(0deg, #06b6d4 2px, transparent 2px) 0 0,
+                linear-gradient(0deg, #06b6d4 2px, transparent 2px) 0 100%;
+            background-size: 20px 20px;
+            background-repeat: no-repeat;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            pointer-events: none;
+        }
+        
+        .card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 
+                0 20px 50px rgba(0, 0, 0, 0.5),
+                0 0 30px rgba(6, 182, 212, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            border-color: rgba(6, 182, 212, 0.5);
+        }
+        
+        .card:hover::before {
+            top: 100%;
+        }
+        
+        .card:hover::after {
+            opacity: 1;
+        }
+        
+        .card:active {
+            transform: translateY(-4px) scale(1.01);
+        }
+
+        /* Card Headers and Text */
+        .card h2, .card h3 {
+            color: #f1f5f9;
+            text-shadow: 0 0 10px rgba(6, 182, 212, 0.3);
+            border-color: rgba(6, 182, 212, 0.3) !important;
+        }
+        
+        /* Form Labels */
+        label {
+            color: #cbd5e1 !important;
+            font-weight: 600;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Input Fields */
+        input, select, textarea {
+            background: rgba(15, 23, 42, 0.6) !important;
+            border: 1px solid rgba(6, 182, 212, 0.3) !important;
+            color: #e2e8f0 !important;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            background: rgba(15, 23, 42, 0.8) !important;
+            border-color: rgba(6, 182, 212, 0.6) !important;
+            box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.1), 0 0 20px rgba(6, 182, 212, 0.2) !important;
+            outline: none;
+        }
+
+        input::placeholder, select::placeholder, textarea::placeholder {
+            color: #64748b;
+        }
+
+        /* Select dropdown options */
+        option {
+            background: #1e293b;
+            color: #e2e8f0;
+        }
+        
+        /* High Risk - Critical Threat */
+        .risk-high {
+            background: linear-gradient(145deg, rgba(127, 29, 29, 0.4) 0%, rgba(15, 23, 42, 0.95) 100%);
+            border-left: 4px solid #dc2626;
+            border-right: 1px solid rgba(220, 38, 38, 0.3);
+            animation: threatPulse 2s ease-in-out infinite;
+            position: relative;
+        }
+        
+        .risk-high::before {
+            background: linear-gradient(180deg, 
+                transparent 0%, 
+                rgba(220, 38, 38, 0.4) 50%, 
+                transparent 100%);
+        }
+        
+        .risk-high:hover {
+            background: linear-gradient(145deg, rgba(153, 27, 27, 0.5) 0%, rgba(15, 23, 42, 0.95) 100%);
+            border-left-width: 6px;
+            box-shadow: 
+                0 20px 50px rgba(220, 38, 38, 0.3),
+                0 0 40px rgba(220, 38, 38, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .risk-high .text-gray-500 {
+            color: #fca5a5 !important;
+        }
+
+        .risk-high .text-gray-800 {
+            color: #fee2e2 !important;
+        }
+        
+        @keyframes threatPulse {
+            0%, 100% {
+                box-shadow: 
+                    0 10px 30px rgba(0, 0, 0, 0.4),
+                    0 0 20px rgba(220, 38, 38, 0.2);
+            }
+            50% {
+                box-shadow: 
+                    0 10px 30px rgba(0, 0, 0, 0.4),
+                    0 0 30px rgba(220, 38, 38, 0.4),
+                    inset 0 0 20px rgba(220, 38, 38, 0.1);
+            }
+        }
+        
+        /* Low Risk - Secure Status */
+        .risk-low {
+            background: linear-gradient(145deg, rgba(20, 83, 45, 0.4) 0%, rgba(15, 23, 42, 0.95) 100%);
+            border-left: 4px solid #10b981;
+            border-right: 1px solid rgba(16, 185, 129, 0.3);
+            animation: securePulse 2s ease-in-out infinite;
+            position: relative;
+        }
+        
+        .risk-low::before {
+            background: linear-gradient(180deg, 
+                transparent 0%, 
+                rgba(16, 185, 129, 0.3) 50%, 
+                transparent 100%);
+        }
+        
+        .risk-low:hover {
+            background: linear-gradient(145deg, rgba(21, 94, 51, 0.5) 0%, rgba(15, 23, 42, 0.95) 100%);
+            border-left-width: 6px;
+            box-shadow: 
+                0 20px 50px rgba(16, 185, 129, 0.2),
+                0 0 40px rgba(16, 185, 129, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .risk-low .text-gray-500 {
+            color: #86efac !important;
+        }
+
+        .risk-low .text-gray-800 {
+            color: #dcfce7 !important;
+        }
+        
+        @keyframes securePulse {
+            0%, 100% {
+                box-shadow: 
+                    0 10px 30px rgba(0, 0, 0, 0.4),
+                    0 0 20px rgba(16, 185, 129, 0.15);
+            }
+            50% {
+                box-shadow: 
+                    0 10px 30px rgba(0, 0, 0, 0.4),
+                    0 0 30px rgba(16, 185, 129, 0.25),
+                    inset 0 0 20px rgba(16, 185, 129, 0.1);
+            }
+        }
+
+        /* Result Card Text Colors */
+        #resultCard .text-gray-500 {
+            color: #94a3b8 !important;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        #resultCard .text-gray-800 {
+            color: #f1f5f9 !important;
+        }
+        
+        /* Primary Button */
+        button[type="submit"], #get-advice-button {
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            border: 1px solid rgba(6, 182, 212, 0.5);
+            box-shadow: 
+                0 4px 15px rgba(6, 182, 212, 0.3),
+                0 0 20px rgba(6, 182, 212, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button[type="submit"]::before, #get-advice-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        button[type="submit"]:hover::before, #get-advice-button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        button[type="submit"]:hover, #get-advice-button:hover {
+            background: linear-gradient(135deg, #0891b2 0%, #06b6d4 100%);
+            box-shadow: 
+                0 6px 20px rgba(6, 182, 212, 0.5),
+                0 0 30px rgba(6, 182, 212, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        button[type="submit"]:active, #get-advice-button:active {
+            transform: translateY(0);
+        }
+
+        button[type="submit"]:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        /* Chatbot floating button - Security Terminal Style */
+        #chat-button {
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            cursor: pointer;
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            box-shadow: 
+                0 8px 20px rgba(6, 182, 212, 0.4),
+                0 0 30px rgba(6, 182, 212, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(6, 182, 212, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        #chat-button::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, transparent, rgba(255, 255, 255, 0.3), transparent 30%);
+            animation: buttonRotate 3s linear infinite;
+        }
+        
+        @keyframes buttonRotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        #chat-button:hover {
+            transform: scale(1.15) rotate(5deg);
+            box-shadow: 
+                0 12px 30px rgba(6, 182, 212, 0.6),
+                0 0 50px rgba(6, 182, 212, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            background: linear-gradient(135deg, #0891b2 0%, #06b6d4 100%);
+        }
+        
+        #chat-button:active {
+            transform: scale(0.95) rotate(0deg);
+        }
+        
+        /* Chat Modal - Command Center Style */
+        #chat-modal-content {
+            height: 80vh;
+            animation: modalDeploy 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: default;
+            background: linear-gradient(145deg, rgba(15, 23, 42, 0.98) 0%, rgba(30, 41, 59, 0.98) 100%);
+            border: 1px solid rgba(6, 182, 212, 0.3);
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.5),
+                0 0 100px rgba(6, 182, 212, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+        }
+
+        #chat-modal-content h4 {
+            color: #ffffff;
+            text-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
+        }
+
+        #chat-messages {
+            background: rgba(15, 23, 42, 0.6) !important;
+        }
+
+        #initial-message {
+            background: rgba(30, 41, 59, 0.8) !important;
+            color: #94a3b8 !important;
+            border: 1px solid rgba(6, 182, 212, 0.2);
+        }
+
+        #initial-message p {
+            color: #cbd5e1;
+        }
+
+        #advice-response {
+            color: #e2e8f0;
+        }
+
+        #advice-response .bg-white {
+            background: rgba(30, 41, 59, 0.9) !important;
+            border-color: rgba(6, 182, 212, 0.3) !important;
+        }
+
+        #advice-response h5 {
+            color: #06b6d4 !important;
+            text-shadow: 0 0 10px rgba(6, 182, 212, 0.3);
+        }
+
+        #advice-response .text-gray-700 {
+            color: #cbd5e1 !important;
+        }
+        
+        @keyframes modalDeploy {
+            from {
+                opacity: 0;
+                transform: translateY(50px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        /* Interactive elements */
+        button, a, [role="button"] {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        button:hover:not(:disabled), a:hover, [role="button"]:hover {
+            filter: brightness(1.2);
+        }
+        
+        button:active, a:active, [role="button"]:active {
+            transform: scale(0.98);
+        }
+
+        /* Error Box */
+        #errorBox {
+            background: rgba(127, 29, 29, 0.3) !important;
+            border-color: #dc2626 !important;
+            color: #fca5a5 !important;
+        }
+
+        #errorBox p {
+            color: #fee2e2;
+        }
+
+        /* Footer */
+        footer {
+            color: #64748b;
+            text-shadow: 0 0 10px rgba(6, 182, 212, 0.2);
+        }
+        
+        /* Cursor styling */
+        * {
+            cursor: default;
+        }
+        
+        a, button, input, select, textarea, [role="button"] {
+            cursor: pointer;
+        }
+
+        /* Status indicators with glow */
+        .text-red-600 {
+            color: #f87171 !important;
+            text-shadow: 0 0 15px rgba(220, 38, 38, 0.6);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .text-green-600 {
+            color: #4ade80 !important;
+            text-shadow: 0 0 15px rgba(16, 185, 129, 0.6);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .text-indigo-600 {
+            color: #06b6d4 !important;
+            text-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Loading spinner color */
+        .text-indigo-600.fa-spinner {
+            color: #06b6d4 !important;
+        }
+
+        /* Icons glow effect */
+        i.fas {
+            filter: drop-shadow(0 0 3px rgba(6, 182, 212, 0.3));
+        }
+        
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.5);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #06b6d4, #0891b2);
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, #0891b2, #06b6d4);
+        }
+    </style>  
+</head>
+<body class="p-4 md:p-8">
+    <header class="text-center mb-10">
+        <h1 class="text-4xl font-extrabold">Student Dropout Risk Predictor</h1>
+        <p class="text-lg mt-2">Data-Driven Interventions to Promote Student Success</p>
+    </header>
+
+    <div class="max-w-4xl mx-auto">
+        <div class="card p-6 md:p-8 rounded-xl">
+            <h2 class="text-2xl font-semibold mb-6 border-b pb-3">Student Profile Simulation</h2>
+            
+            <form id="predictionForm" class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+                <div class="col-span-1">
+                    <label for="age" class="block text-sm font-medium">Age</label>
+                    <input type="number" step="1" id="age" name="age" required class="mt-1 block w-full rounded-md shadow-sm p-2 border">
+                </div>
+                <div class="col-span-1">
+                    <label for="cgpa" class="block text-sm font-medium">CGPA (0.0 - 10.0)</label>
+                    <input type="number" step="0.1" min="0" max="10" id="cgpa" name="cgpa" required class="mt-1 block w-full rounded-md shadow-sm p-2 border">
+                </div>
+                <div class="col-span-1">
+                    <label for="attendance_rate" class="block text-sm font-medium">Attendance Rate (%)</label>
+                    <input type="number" step="0.1" min="0" max="100" id="attendance_rate" name="attendance_rate" required class="mt-1 block w-full rounded-md shadow-sm p-2 border">
+                </div>
+                <div class="col-span-1">
+                    <label for="family_income" class="block text-sm font-medium">Annual Family Income</label>
+                    <input type="number" step="1000" id="family_income" name="family_income" required class="mt-1 block w-full rounded-md shadow-sm p-2 border">
+                </div>
+                <div class="col-span-1">
+                    <label for="past_failures" class="block text-sm font-medium">Past Failures (Count)</label>
+                    <input type="number" step="1" min="0" id="past_failures" name="past_failures" required class="mt-1 block w-full rounded-md shadow-sm p-2 border">
+                </div>
+                <div class="col-span-1">
+                    <label for="study_hours_per_week" class="block text-sm font-medium">Study Hours/Week</label>
+                    <input type="number" step="0.1" min="0" id="study_hours_per_week" name="study_hours_per_week" required class="mt-1 block w-full rounded-md shadow-sm p-2 border">
+                </div>
+                <div class="col-span-1">
+                    <label for="assignments_submitted" class="block text-sm font-medium">Assignments Submitted</label>
+                    <input type="number" step="1" min="0" id="assignments_submitted" name="assignments_submitted" required class="mt-1 block w-full rounded-md shadow-sm p-2 border">
+                </div>
+                <div class="col-span-1">
+                    <label for="projects_completed" class="block text-sm font-medium">Projects Completed</label>
+                    <input type="number" step="1" min="0" id="projects_completed" name="projects_completed" required class="mt-1 block w-full rounded-md shadow-sm p-2 border">
+                </div>
+                <div class="col-span-1">
+                    <label for="total_activities" class="block text-sm font-medium">Total Activities</label>
+                    <input type="number" step="1" min="0" id="total_activities" name="total_activities" required class="mt-1 block w-full rounded-md shadow-sm p-2 border">
+                </div>
+                <div class="col-span-1">
+                    <label for="gender" class="block text-sm font-medium">Gender</label>
+                    <select id="gender" name="gender" required class="mt-1 block w-full rounded-md shadow-sm p-2 border">
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="col-span-1">
+                    <label for="department" class="block text-sm font-medium">Department</label>
+                    <select id="department" name="department" required class="mt-1 block w-full rounded-md shadow-sm p-2 border">
+                        <option value="CS">Computer Science (CS)</option>
+                        <option value="ME">Mechanical Engineering (ME)</option>
+                        <option value="CIVIL">Civil Engineering</option>
+                        <option value="ECE">Electronics & Comm. Eng. (ECE)</option>
+                        <option value="BIO">Biotechnology (BIO)</option>
+                        <option value="COMMERCE">Commerce</option>
+                        <option value="ARTS">Arts</option>
+                    </select>
+                </div>
+                <div class="col-span-1">
+                    <label for="scholarship" class="block text-sm font-medium">Scholarship Status</label>
+                    <select id="scholarship" name="scholarship" required class="mt-1 block w-full rounded-md shadow-sm p-2 border">
+                        <option value="yes">Yes</option>
+                        <option value="no">No</option>
+                    </select>
+                </div>
+                <div class="col-span-1">
+                    <label for="parental_education" class="block text-sm font-medium">Parental Education</label>
+                    <select id="parental_education" name="parental_education" required class="mt-1 block w-full rounded-md shadow-sm p-2 border">
+                        <option value="postgraduate">Postgraduate</option>
+                        <option value="secondary">Secondary</option>
+                        <option value="primary">Primary</option>
+                        <option value="na">Not Applicable</option>
+                    </select>
+                </div>
+                <div class="col-span-1">
+                    <label for="extra_curricular" class="block text-sm font-medium">Extra Curricular</label>
+                    <select id="extra_curricular" name="extra_curricular" required class="mt-1 block w-full rounded-md shadow-sm p-2 border">
+                        <option value="yes">Yes</option>
+                        <option value="no">No</option>
+                    </select>
+                </div>
+                <div class="col-span-1">
+                    <label for="sports_participation" class="block text-sm font-medium">Sports Participation</label>
+                    <select id="sports_participation" name="sports_participation" required class="mt-1 block w-full rounded-md shadow-sm p-2 border">
+                        <option value="yes">Yes</option>
+                        <option value="no">No</option>
+                    </select>
+                </div>
+            </form>
+
+            <div class="col-span-full mt-6">
+                <button type="submit" form="predictionForm" id="predictButton" class="w-full font-bold py-3 px-4 rounded-lg focus:outline-none focus:shadow-outline transition duration-150 ease-in-out">
+                    <i class="fas fa-chart-line mr-2"></i> Predict Dropout Risk
+                </button>
+            </div>
+        </div>
+        <div id="resultCard" class="card hidden mt-8 p-6 md:p-8 rounded-xl transition duration-300 ease-in-out">
+            <h3 class="text-xl font-semibold mb-4 flex items-center">
+                <i class="fas fa-bullhorn mr-3"></i> Prediction Result
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <p class="text-sm font-medium">Risk Status</p>
+                    <p id="riskStatus" class="text-3xl font-extrabold"></p>
+                </div>
+                <div>
+                    <p class="text-sm font-medium">Dropout Probability
