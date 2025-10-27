@@ -6,4 +6,4 @@ joblib==1.5.2
 matplotlib==3.10.7
 seaborn==0.13.2
 gunicorn==22.0.0
-requests==2.7.0
+requests>=2.32.0
